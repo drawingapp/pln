@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Rubik">
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+
+<body>
+    <div class="main-container" id="main-container">
+        <canvas id="canvas"></canvas>
+
+        <button class="toolbar-triger" id="toolbar-triger" onclick="showHide()">
+            < </button>
+                <div class="main-toolbar" id="main-toolbar">
+                    <div class="row">
+                        <div class="column">
+                        </div>
+                    </div>
+                </div>
+                <div class="status-bar">
+                    <div class="last" id="last-status">
+                        Mode: Pilih
+                    </div>
+                </div>
+                <div class="total-object">
+                    <span id="total-object">0 Objek</span>
+                </div>
+    </div>
+    <div class="button-container">
+        <div class="non-scroll">
+            <input class="color-picker" value="FF0000" data-jscolor="{preset:'small dark', position:'top'}"
+                onchange="updateColor(this.value)">
+            <button onclick="removeSelected()">Hapus</button>
+        </div>
+        <div class="scrollable">
+            <button onclick="selectMode()">Select</button>
+            <button onclick="lineMode()">Garis</button>
+            <button onclick="addText()">Teks</button>
+            <button onclick="addRect()">Persegi</button>
+            <button onclick="addImage()">Gambar</button>
+            <!-- <button onclick="showToast('coba')">Toast</button> -->
+            <div id="snackbar"></div>
+            <button onclick="downloadAsImage()">Download Gambar</button>
+            <!-- <button>asd</button>
+            <button>asd</button> -->
+        </div>
+    </div>
+    <script src="./js/jscolor.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script>
+        // Here we can adjust defaults for all color pickers on page:
+        jscolor.presets.default = {
+            palette: [
+                '#000000', '#7d7d7d', '#870014', '#ec1c23', '#ff7e26', '#fef100', '#22b14b', '#00a1e7', '#3f47cc', '#a349a4',
+                '#ffffff', '#c3c3c3', '#b87957', '#feaec9', '#ffc80d', '#eee3af', '#b5e61d', '#99d9ea', '#7092be', '#c8bfe7',
+            ],
+            //paletteCols: 12,
+            //hideOnPaletteClick: true,
+            //width: 271,
+            //height: 151,
+            //position: 'right',
+            //previewPosition: 'right',
+            //backgroundColor: 'rgba(51,51,51,1)', controlBorderColor: 'rgba(153,153,153,1)', buttonColor: 'rgba(240,240,240,1)',
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/fabric"></script>
+    <script>
+
+        function showToast(message, duration) {
+            let dur = 2500;
+            if (duration != undefined){
+                dur = 1500
+            }
+            var x = document.getElementById("snackbar");
+            x.className = "show";
+            x.innerHTML = message
+            setTimeout(function () { x.className = x.className.replace("show", ""); }, dur);
+        }
+
+        const container = document.getElementById("main-container")
+        const txtTotalObject = document.getElementById("total-object")
+        const canvas = new fabric.Canvas('canvas', {
+            width: container.offsetWidth - 1,
+            height: container.offsetHeight - 1
+        });
+        const toolbarTriger = document.getElementById("toolbar-triger")
+        const mainToolbar = document.getElementById("main-toolbar")
+        var showToolbar = false
+        var color = '#FF0000FF'
+        var positionWhenAddX = 100;
+        var positionWhenAddY = 100;
+        var shapes = [];
+        var currentMode = "select";
+        var line, isDown, mode;
+
+        function selectMode() {
+            mode = "select";
+            showToast("Mode Memilih (Select)")
+            document.getElementById("last-status").innerHTML = "Mode: Pilih"
+            canvas.selection = true;
+            canvas.renderAll()
+        }
+
+        canvas.on('mouse:down', function (o) {
+            console.log("a")
+            isDown = true;
+
+            if (mode == "draw") {
+                var pointer = canvas.getPointer(o.e);
+                var points = [pointer.x, pointer.y, pointer.x, pointer.y];
+                line = new fabric.Line(points, {
+                    strokeDashArray: [5, 5],
+                    strokeWidth: 5,
+                    fill: color,
+                    stroke: color,
+                    originX: 'center',
+                    originY: 'center',
+                });
+                canvas.add(line);
+            }
+        });
+
+        canvas.on('mouse:move', function (o) {
+            if (!isDown) return;
+            var pointer = canvas.getPointer(o.e);
+
+            if (mode == "draw") {
+                line.set({ x2: pointer.x, y2: pointer.y });
+                canvas.renderAll();
+            }
+        });
+
+        canvas.on('mouse:up', function (o) {
+            isDown = false;
+            if (mode == "draw") line.setCoords();
+        });
+
+        function lineMode() {
+            mode = "draw";
+            showToast("Mode menggaris")
+            document.getElementById("last-status").innerHTML = "Mode: Garis"
+        }
+        //   canvas.height = window.innerHeight * 0.9
+        //   canvas.width = window.innerWidth * 0.95
+        // fitToContainer(canvas);
+
+        function showHide() {
+            console.log("clickeds")
+            if (showToolbar) {
+                mainToolbar.style.display = "none"
+                toolbarTriger.style.right = 0.02
+                toolbarTriger.setAttribute("class", "toolbar-triger")
+                toolbarTriger.innerHTML = "<"
+            } else {
+                mainToolbar.style.display = "block"
+                toolbarTriger.setAttribute("class", "toolbar-triger opened")
+                toolbarTriger.innerHTML = ">"
+            }
+            showToolbar = !showToolbar
+
+        }
+
+        function downloadAsImage(){
+            var a = document.createElement("a"); //Create <a>
+            a.setAttribute("crossOrigin","anonymous")
+
+            console.log(a)
+            let x = canvas.toDataURL("image/png")
+            console.log(x)
+            
+            a.href = x;//"data:image/png;base64," + ImageBase64; //Image Base64 Goes here
+            let now = moment().format('YYYY-MM-DD-HHmmss');
+            a.download = `image-${now}.png`; //File name Here
+            a.click();
+            
+        }
+
+        function updateColor(selectedcolor) {
+            color = selectedcolor
+        }
+        function fitToContainer(canvas) {
+            // Make it visually fill the positioned parent
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            // ...then set the internal size to match
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        // const rect = new fabric.Rect({
+        //     top: 100,
+        //     left: 100,
+        //     width: 60,
+        //     height: 70,
+        //     fill: color,
+        // });
+        // canvas.add(rect);
+
+
+        function addToCanvas(type, item) {
+            canvas.add(item)
+            item.id = `${type}-${Date.now()}`
+            shapes.push(item)
+            console.log(shapes)
+            positionWhenAddX += 5
+            positionWhenAddY += 5
+            txtTotalObject.innerHTML = `${shapes.length} objek`
+        }
+
+        function addRect() {
+            let item = new fabric.Rect({
+                left: positionWhenAddX,
+                top: positionWhenAddX,
+                fill: color,
+                width: 100,
+                height: 100,
+                originX: 'center',
+                originY: 'center',
+                strokeWidth: 0
+            })
+            addToCanvas('rect', item)
+        }
+
+
+        function addImage() {
+            let url = 'http://fabricjs.com/assets/pug_small.jpg'
+            // url = 'Star1.svg'
+            url = 'https://raw.githubusercontent.com/ibnunaufal/drawingApp/master/pln-small.png'
+            fabric.Image.fromURL(url, function (myImg) {
+                var img1 = myImg.set({
+                    left: positionWhenAddY, top: positionWhenAddX
+                });
+                addToCanvas('img', img1);
+            }, { crossOrigin: 'anonymous' });
+        }
+
+        function addText() {
+            let text = new fabric.IText('Masukkan Teks', {
+                left: positionWhenAddX,
+                top: positionWhenAddX,
+                fill: color,
+                fontFamily: 'sans-serif',
+                hasRotatingPoint: false,
+                centerTransform: true,
+                originX: 'center',
+                originY: 'center',
+                lockUniScaling: true
+            });
+
+            addToCanvas('text', text);
+
+            text.on('scaling', () => {
+                this.$scope.$evalAsync();
+            });
+        }
+
+        function removeSelected() {
+            let activeObjects = canvas.getActiveObjects();
+            canvas.discardActiveObject();
+            if (activeObjects.length) {
+                canvas.remove.apply(canvas, activeObjects);
+
+                for (let i = 0; i < activeObjects.length; i++) {
+                    const element = activeObjects[i];
+
+                    for (let x = 0; x < shapes.length; x++) {
+                        const s = shapes[x];
+                        if (s.id === element.id) {
+                            shapes.splice(x, 1)
+                        }
+                    }
+                }
+            } else {
+                showToast('Pilih Objek dahulu')
+            }
+            txtTotalObject.innerHTML = `${shapes.length} objek`
+        }
+    </script>
+</body>
+
+</html>
