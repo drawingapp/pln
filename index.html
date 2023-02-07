@@ -47,7 +47,7 @@
             <!-- <button onclick="showToast('coba')">Toast</button> -->
             <div id="snackbar"></div>
             <button onclick="downloadAsImage()">Download Gambar</button>
-            <button onclick="downloadAsExcel()">Download Excel</button>
+            <button onclick="downloadAsExcel()">Download As Excel</button>
             <!-- <button>asd</button>
             <button>asd</button> -->
         </div>
@@ -201,7 +201,7 @@
         }
 
         function downloadAsExcel(){
-            // window.location.href = 'table.html'
+            window.location.href = 'table.html'
             var json = canvas.toJSON();
             window.localStorage.setItem("lastProject", JSON.stringify(json))
             window.localStorage.setItem("shapes", JSON.stringify(shapes))
