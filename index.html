@@ -200,12 +200,15 @@
             
         }
 
-        function downloadAsExcel(){
-            window.location.href = 'table.html'
+        function downloadAsExcel(){            
             var json = canvas.toJSON();
             window.localStorage.setItem("lastProject", JSON.stringify(json))
             window.localStorage.setItem("shapes", JSON.stringify(shapes))
             console.log(shapes)
+            showToast("downloading..")
+            setTimeout(() => {
+                window.location.href = 'table.html'
+            }, 3000);            
         }
 
         function loadLastProject(value){
