@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        table {
+           border-collapse: collapse;
+        }
+        /* .tr-tbody {
+            border: 1px solid black;
+        }
+        table, td{
+            border: 1px solid black;
+            text-align: center;
+        } */
+        .bordered td {
+            border: 1px solid black;
+        }
+    </style>
+    <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
+</head>
+
+<body>
+    <button onclick="htmlTableToExcel('xlsx')">export</button>
+    <table style="width:100%" id="tblToExcl">
+        <!-- col 14 -->
+
+        <tr>
+            <td></td>
+            <td rowspan="2">
+                <img src="./../logo-pln.png" alt="">
+            </td>
+            <td>PT PLN Persero</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>UNIT INDUK DISTRIBUSI JAWA TENGAH & DI YOGYAKARTA</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>            
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td colspan="2">RAB TOTAL</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td colspan="10" style="text-align: center;">
+                RENCANA ANGGARAN BIAYA (RAB)
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>Pekerjaan</td>
+            <td>:</td>
+            <td colspan="5" rowspan="2">PERMOHONAN PBPD KOLEKTIF PUSKESMAS SIDAREJA & PUSKESMAS BANTARSARI DAYA 99000 VA
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>Lokasi</td>
+            <td>:</td>
+            <td colspan="5">SIDAREJA & BANTARSARI</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>Pelaksana</td>
+            <td>:</td>
+            <td colspan="5">PT PLN PERSERO SIDAREJA</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>Anggaran</td>
+            <td>:</td>
+            <td colspan="5">Investasi Tahun 2022</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr></tr>
+
+        <!-- head -->
+        <tr class="bordered">
+            <td rowspan="2">NO</td>
+            <td rowspan="2">URAIAN</td>
+            <td rowspan="2">GOL</td>
+            <td rowspan="2">SAT</td>
+            <td rowspan="2">VOL</td>
+            <td rowspan="2">HARGA SATUAN</td>
+            <td colspan="4">BIAYA YANG DIPERLUKAN (Rp)</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr class="bordered">
+            <td>MDU</td>
+            <td>HARDWARE</td>
+            <td>JASA</td>
+            <td>JUMLAH</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+
+        <!-- end head -->
+
+        <tbody>
+            <tr class="bordered">
+                <td>1</td>
+                <td>Membuat makanan</td>
+                <td>IV A</td>
+                <td>Buah</td>
+                <td>1</td>
+                <td>20000</td>
+                <td>3</td>
+                <td>2</td>
+                <td>2000</td>                
+                <td>3</td>
+                <td>6000</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+
+        <tr class="bordered">
+            <td></td>
+            <td></td>
+            <td colspan="4">Jumlah MDU - Hardware - Jasa</td>
+            <td>:</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr class="bordered">
+            <td></td>
+            <td></td>
+            <td colspan="4">PPn 10%</td>
+            <td>:</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr class="bordered">
+            <td></td>
+            <td></td>
+            <td colspan="4">Jumlah Total</td>
+            <td>:</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr></tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td colspan="3">Paraf</td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>REN</td>
+            <td>JAR</td>
+            <td>TEL</td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+
+    <script>
+
+        loadObject()
+
+        function loadObject(){
+            var shapes = JSON.parse(window.localStorage.getItem("shapes"))
+            console.log(shapes)
+        }
+        function htmlTableToExcel(type){
+           var data = document.getElementById('tblToExcl');
+            var excelFile = XLSX.utils.table_to_book(data, {sheet: "sheet1"});
+            XLSX.write(excelFile, { bookType: type, bookSST: true, type: 'base64' });
+            XLSX.writeFile(excelFile, 'ExportedFile:HTMLTableToExcel.' + type);
+        }
+    </script>
+</body>
+
+</html>

@@ -39,13 +39,15 @@
         </div>
         <div class="scrollable">
             <button onclick="selectMode()">Select</button>
-            <button onclick="lineMode()">Garis</button>
+            <button onclick="lineMode('dashed')">Garis Putus</button>
+            <button onclick="lineMode('line')">Garis Sambung</button>
             <button onclick="addText()">Teks</button>
             <button onclick="addRect()">Persegi</button>
             <button onclick="addImage()">Gambar</button>
             <!-- <button onclick="showToast('coba')">Toast</button> -->
             <div id="snackbar"></div>
             <button onclick="downloadAsImage()">Download Gambar</button>
+            <button onclick="downloadAsExcel()">Download Excel</button>
             <!-- <button>asd</button>
             <button>asd</button> -->
         </div>
@@ -68,7 +70,7 @@
             //backgroundColor: 'rgba(51,51,51,1)', controlBorderColor: 'rgba(153,153,153,1)', buttonColor: 'rgba(240,240,240,1)',
         }
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/fabric"></script>
+    <script src="./js/fabric.js"></script>
     <script>
 
         function showToast(message, duration) {
@@ -98,6 +100,12 @@
         var currentMode = "select";
         var line, isDown, mode;
 
+        var last = window.localStorage.getItem("lastProject")
+        console.log(last)
+        if (last != "" && last != null){
+            loadLastProject(last)
+        }
+
         function selectMode() {
             mode = "select";
             showToast("Mode Memilih (Select)")
@@ -110,7 +118,19 @@
             console.log("a")
             isDown = true;
 
-            if (mode == "draw") {
+            if (mode == "line") {
+                var pointer = canvas.getPointer(o.e);
+                var points = [pointer.x, pointer.y, pointer.x, pointer.y];
+                line = new fabric.Line(points, {                    
+                    strokeWidth: 5,
+                    fill: color,
+                    stroke: color,
+                    originX: 'center',
+                    originY: 'center',
+                });
+                canvas.add(line);
+            }
+            if (mode == "dashed") {
                 var pointer = canvas.getPointer(o.e);
                 var points = [pointer.x, pointer.y, pointer.x, pointer.y];
                 line = new fabric.Line(points, {
@@ -129,7 +149,7 @@
             if (!isDown) return;
             var pointer = canvas.getPointer(o.e);
 
-            if (mode == "draw") {
+            if (mode == "dashed" || mode == "line") {
                 line.set({ x2: pointer.x, y2: pointer.y });
                 canvas.renderAll();
             }
@@ -137,11 +157,11 @@
 
         canvas.on('mouse:up', function (o) {
             isDown = false;
-            if (mode == "draw") line.setCoords();
+            if (mode == "dashed" || mode == "line") line.setCoords();
         });
 
-        function lineMode() {
-            mode = "draw";
+        function lineMode(type) {
+            mode = type;
             showToast("Mode menggaris")
             document.getElementById("last-status").innerHTML = "Mode: Garis"
         }
@@ -180,6 +200,22 @@
             
         }
 
+        function downloadAsExcel(){
+            // window.location.href = 'table.html'
+            var json = canvas.toJSON();
+            window.localStorage.setItem("lastProject", JSON.stringify(json))
+            window.localStorage.setItem("shapes", JSON.stringify(shapes))
+            console.log(shapes)
+        }
+
+        function loadLastProject(value){
+            var parsed = JSON.parse(value)            
+            canvas.loadFromJSON(parsed, canvas.renderAll.bind(canvas));
+            shapes = JSON.parse(window.localStorage.getItem("shapes"))
+            txtTotalObject.innerHTML = `${shapes.length} objek`
+            console.log(shapes)
+        }
+
         function updateColor(selectedcolor) {
             color = selectedcolor
         }
@@ -209,6 +245,7 @@
             positionWhenAddX += 5
             positionWhenAddY += 5
             txtTotalObject.innerHTML = `${shapes.length} objek`
+            mode = "select"
         }
 
         function addRect() {
