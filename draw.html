@@ -12,35 +12,48 @@
 </head>
 
 <body>
-    <div style="height: 70%;
-    display: flex;
-    justify-content: center;
-    align-items: center;">
-        <img src="./assets/pln.png" alt="" style="width: 30%; max-width: 250px; height: auto;">
-    </div>
-    <div style="height: 20%;
-    display: grid;
-    align-content: center;
-    justify-content: center;">        
-        <button class="button-10" role="button" onclick="startDrawing()"> Buat Project Baru </button>
+    <div class="main-container" id="main-container">
+        <canvas id="canvas"></canvas>
+
         
+                <div class="main-toolbar" id="main-toolbar">
+                    <div class="row">
+                        <div class="column">
+                        </div>
+                    </div>
+                </div>
+                <div class="status-bar">
+                    <div class="last" id="last-status">
+                        Mode: Pilih
+                    </div>
+                </div>
+                <div class="total-object">
+                    <span id="total-object">0 Objek</span>
+                </div>
     </div>
-    <div style="height: 10%;
-    display: grid;
-    align-content: center;
-    justify-content: center;
-    text-align: center;">
-    <p>PLN Drawing App <br>v0.0.1</p>        
+    <div class="button-container">
+        <div class="non-scroll">
+            <input class="color-picker" value="FF0000" data-jscolor="{preset:'small dark', position:'top'}"
+                onchange="updateColor(this.value)">
+            <button onclick="removeSelected()">Hapus</button>
+        </div>
+        <div class="scrollable">
+            <button onclick="selectMode()">Select</button>
+            <button onclick="lineMode('dashed')">Garis Putus</button>
+            <button onclick="lineMode('line')">Garis Sambung</button>
+            <button onclick="addText()">Teks</button>
+            <button onclick="addRect()">Persegi</button>
+            <button onclick="addImage()">Gambar</button>
+            <!-- <button onclick="showToast('coba')">Toast</button> -->
+            <div id="snackbar"></div>
+            <button onclick="downloadAsImage()">Download Gambar</button>
+            <button onclick="downloadAsExcel()">Download As Excel</button>
+            <button onclick="exportProject()">Export Project</button>
+            
+            <!-- <button>asd</button>
+            <button>asd</button> -->
+        </div>
     </div>
-
-    <script>
-        function startDrawing(){
-            setTimeout(() => {
-                window.location.href = 'draw.html'
-            }, 1000);
-        }
-    </script>
-
     <script src="./js/jscolor.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
     <script>
@@ -208,6 +221,17 @@
             console.log(shapes)
         }
 
+        function exportProject(){
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(new Blob([JSON.stringify(canvas.toJSON(), null, 2)], {
+                type: "text/plain"
+            }));
+            a.setAttribute("download", "data.json");
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
         function updateColor(selectedcolor) {
             color = selectedcolor
         }
@@ -238,6 +262,9 @@
             positionWhenAddY += 5
             txtTotalObject.innerHTML = `${shapes.length} objek`
             mode = "select"
+            var json = canvas.toJSON();
+            window.localStorage.setItem("lastProject", JSON.stringify(json))
+            window.localStorage.setItem("shapes", JSON.stringify(shapes))
         }
 
         function addRect() {
@@ -303,6 +330,9 @@
                         }
                     }
                 }
+                var json = canvas.toJSON();
+                window.localStorage.setItem("lastProject", JSON.stringify(json))
+                window.localStorage.setItem("shapes", JSON.stringify(shapes))
             } else {
                 showToast('Pilih Objek dahulu')
             }

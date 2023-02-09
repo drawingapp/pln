@@ -9,8 +9,9 @@
     <title>Document</title>
     <style>
         table {
-           border-collapse: collapse;
+            border-collapse: collapse;
         }
+
         /* .tr-tbody {
             border: 1px solid black;
         }
@@ -23,10 +24,13 @@
         }
     </style>
     <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 </head>
 
 <body>
-    <button onclick="htmlTableToExcel('xlsx')">export</button>
+    <button onclick="goBack()">Kembali</button>
+    <button onclick="htmlTableToExcel('xlsx')">Ekspor</button>
+    <hr>
     <table style="width:100%" id="tblToExcl">
         <!-- col 14 -->
 
@@ -61,7 +65,7 @@
             <td></td>
             <td></td>
             <td></td>
-            <td></td>            
+            <td></td>
         </tr>
         <tr>
             <td></td>
@@ -142,7 +146,7 @@
             <td></td>
             <td>Anggaran</td>
             <td>:</td>
-            <td colspan="5">Investasi Tahun 2022</td>
+            <td colspan="5">Investasi Tahun 2023</td>
             <td></td>
             <td></td>
             <td></td>
@@ -176,23 +180,8 @@
 
         <!-- end head -->
 
-        <tbody>
-            <tr class="bordered">
-                <td>1</td>
-                <td>Membuat makanan</td>
-                <td>IV A</td>
-                <td>Buah</td>
-                <td>1</td>
-                <td>20000</td>
-                <td>3</td>
-                <td>2</td>
-                <td>2000</td>                
-                <td>3</td>
-                <td>6000</td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
+        <tbody id="tbody">
+
         </tbody>
 
         <tr class="bordered">
@@ -287,15 +276,67 @@
 
         loadObject()
 
-        function loadObject(){
+        function loadObject() {            
             var shapes = JSON.parse(window.localStorage.getItem("shapes"))
             console.log(shapes)
+
+            var tbody = document.getElementById("tbody");
+            var element = ""
+            if (shapes.length > 0) {
+                shapes.forEach(function(value, index) {
+                    console.log(value)
+                    console.log(index)
+                    switch (value.type) {
+                        case 'rect':
+                            element += `<tr class="bordered"><td>${index+1}</td><td>Kotak</td><td>IV A</td><td>Piece</td><td>1</td><td>20000</td><td>3</td><td>2</td><td>2000</td><td>3</td><td>6000</td><td></td><td></td><td></td></tr>`;
+                            break;
+                        case 'i-text':
+                            element += `<tr class="bordered"><td>${index+1}</td><td>Text</td><td>IV A</td><td>Piece</td><td>1</td><td>20000</td><td>3</td><td>2</td><td>2000</td><td>3</td><td>6000</td><td></td><td></td><td></td></tr>`;
+                            break;
+                        case 'image':
+                            element += `<tr class="bordered"><td>${index+1}</td><td>Logo PLN</td><td>IV A</td><td>Piece</td><td>1</td><td>20000</td><td>3</td><td>2</td><td>2000</td><td>3</td><td>6000</td><td></td><td></td><td></td></tr>`;
+                            break;
+                        default:
+                            break;
+                    }
+                });
+            }
+            tbody.innerHTML = element
+
         }
-        function htmlTableToExcel(type){
-           var data = document.getElementById('tblToExcl');
-            var excelFile = XLSX.utils.table_to_book(data, {sheet: "sheet1"});
+        function goBack(){
+            window.history.back()
+        }
+        function htmlTableToExcel(type) {
+            var now = moment().format("DD-MM-YYYY--HH-mm-ss")            
+            var data = document.getElementById('tblToExcl');
+            var excelFile = XLSX.utils.table_to_book(data, { sheet: "sheet1" });
             XLSX.write(excelFile, { bookType: type, bookSST: true, type: 'base64' });
-            XLSX.writeFile(excelFile, 'ExportedFile:HTMLTableToExcel.' + type);
+            XLSX.writeFile(excelFile, `Export-${now}.` + type);
+            console.log(data)
+            console.log(excelFile)
+        }
+
+        function downloadLink() {
+            function download_file(name, contents, mime_type) {
+                mime_type = mime_type || "text/plain";
+
+                var blob = new Blob([contents], { type: mime_type });
+
+                var dlink = document.createElement('a');
+                dlink.download = name;
+                dlink.href = window.URL.createObjectURL(blob);
+                dlink.onclick = function (e) {
+                    // revokeObjectURL needs a delay to work properly
+                    var that = this;
+                    setTimeout(function () {
+                        window.URL.revokeObjectURL(that.href);
+                    }, 1500);
+                };
+
+                dlink.click();
+                dlink.remove();
+            }
         }
     </script>
 </body>
