@@ -23,6 +23,7 @@
     align-content: center;
     justify-content: center;">        
         <button class="button-10" role="button" onclick="startDrawing()"> Buat Project Baru </button>
+        <button class="button-11" id="openrecent" role="button" onclick="openRecent()"> Buka Project Sebelumnya </button>
         
     </div>
     <div style="height: 10%;
@@ -34,7 +35,27 @@
     </div>
 
     <script>
+        checkRecent()
+        function checkRecent(){
+            var shapes = JSON.parse(window.localStorage.getItem("shapes"))
+            console.log(shapes)
+            if (shapes != null){
+                if (shapes.length > 0){
+                    document.getElementById("openrecent").style.display = "block"                    
+                } else {
+                    document.getElementById("openrecent").style.display = "none"
+                }
+            } else {
+                document.getElementById("openrecent").style.display = "none"
+            }
+        }
+        function openRecent(){            
+            setTimeout(() => {
+                window.location.href = 'draw.html'
+            }, 1000);
+        }
         function startDrawing(){
+            window.localStorage.clear("shapes");
             setTimeout(() => {
                 window.location.href = 'draw.html'
             }, 1000);
