@@ -25,12 +25,16 @@
     </style>
     <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
 </head>
 
 <body>
     <button onclick="goBack()">Kembali</button>
     <button onclick="htmlTableToExcel('xlsx')">Ekspor</button>
-    <button onclick="sample('tblToExcl','tblToExcl')">Ekspor</button>
+    <!-- <button onclick="sample('tblToExcl','tblToExcl')">Ekspor</button>
+    <button onclick="exportTableToExcel('tblToExcl','tblToExcl')">Ekspor</button>    
+    <button onclick="exportExcel('tblToExcl','tblToExcl')">Ekspor</button>     -->
+    
     <hr>
     <table style="width:100%" id="tblToExcl">
         <!-- col 14 -->
@@ -38,7 +42,7 @@
         <tr>
             <td></td>
             <td rowspan="2">
-                <img src="./assets/logo-pln.png" alt="">
+                <!-- <img src="./assets/logo-pln.png" alt=""> -->
             </td>
             <td>PT PLN Persero</td>
             <td></td>
@@ -329,6 +333,66 @@
             var ctx = { worksheet: name || 'Worksheet', table: table.innerHTML }
             window.location.href = uri + base64(format(template, ctx))
             
+        }
+
+        function exportTableToExcel(tableID, filename = ''){
+            var downloadLink;
+            var dataType = 'application/vnd.ms-excel';
+            var tableSelect = document.getElementById(tableID);
+            var tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
+            
+            // Specify file name
+            filename = filename?filename+'.xls':'excel_data.xls';
+            
+            // Create download link element
+            downloadLink = document.createElement("a");
+            
+            document.body.appendChild(downloadLink);
+            
+            if(navigator.msSaveOrOpenBlob){
+                var blob = new Blob(['\ufeff', tableHTML], {
+                    type: dataType
+                });
+                navigator.msSaveOrOpenBlob( blob, filename);
+            }else{
+                // Create a link to the file
+                downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+            
+                // Setting the file name
+                downloadLink.download = filename;
+                
+                //triggering the function
+                downloadLink.click();
+            }
+        }
+
+        function exportExcel(id,name){ //<table> id and filename
+            var today = new Date();
+            var date = ('0'+today.getDate()).slice(-2)+"-"+('0'+(today.getMonth()+1)).slice(-2)+"-"+today.getFullYear();
+
+            var file_name = name+"_"+date+".xls"; //filename with current date, change if needed
+            var meta = '<meta http-equiv="content-type" content="text/html; charset=UTF-8" />';
+            var html = $("#"+id).clone();
+
+            html.find('.remove').remove(); //add the 'remove' class on elements you do not want to show in the excel
+            html.find('a').each(function() { //remove links, leave text only
+                var txt = $(this).text();
+                $(this).after(txt).remove();
+            });
+            html.find('input, textarea').each(function() { //replace inputs for their respectives texts
+                var txt = $(this).val().replace(/\r\n|\r|\n/g,"<br>");
+                $(this).after(txt).remove();
+            });
+            html.find('select').each(function() { //replace selects for their selected option text
+                var txt = $(this).find('option:selected').text();
+                $(this).after(txt).remove();
+            });
+            html.find('br').attr('style', "mso-data-placement:same-cell"); //make line breaks show in single cell
+            html = "<table>"+html.html()+"</table>";
+
+            var uri = 'data:application/vnd.ms-excel,'+encodeURIComponent(meta+html);
+            var a = $("<a>", {href: uri, download: file_name});
+            $(a)[0].click();
         }
 
         function downloadLink() {
