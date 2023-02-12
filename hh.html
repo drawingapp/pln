@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+<head>
+    <meta charset="UTF-8">
+    <title>Convert Blob to Base64 String</title>
+</head>
+  
+<body>
+<div>Hello GeeksForGeeks</div>
+<script type="text/javascript">
+    
+    let blob = new Blob(["https://drawingapp.github.io/4730d39a-d05b-4930-8f67-62500577cb0e"], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    // The full Blob Object can be seen 
+    // in the Console of the Browser
+    console.log('Blob - ', blob);
+  
+    var reader = new FileReader();
+    reader.readAsDataURL(blob);
+    reader.onloadend = function () {
+    var base64String = reader.result;
+    console.log('Base64 String - ', base64String);
+  
+    // Simply Print the Base64 Encoded String,
+    // without additional data: Attributes.
+    console.log('Base64 String without Tags- ', 
+   base64String.substr(base64String.indexOf(', ') + 1));
+        }
+    </script>
+</body>
+</html>

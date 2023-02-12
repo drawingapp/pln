@@ -206,10 +206,12 @@
             window.localStorage.setItem("lastProject", JSON.stringify(json))
             window.localStorage.setItem("shapes", JSON.stringify(shapes))
             console.log(shapes)
-            showToast("downloading..")
+            showToast("Exporting...")
             setTimeout(() => {
-                window.open('table.html')
-            }, 3000);            
+                console.log("opening")
+                window.open('table.html', "_self")
+                // document.location('table.html')
+            }, 3000);
         }
 
         function loadLastProject(value){
